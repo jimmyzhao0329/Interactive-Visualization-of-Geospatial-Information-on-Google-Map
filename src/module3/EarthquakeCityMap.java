@@ -24,7 +24,7 @@ import parsing.ParseFeed;
 /** EarthquakeCityMap
  * An application with an interactive map displaying earthquake data.
  * Author: UC San Diego Intermediate Software Development MOOC team
- * @author Your name here
+ * @author Qing Zhao
  * Date: July 17, 2015
  * */
 public class EarthquakeCityMap extends PApplet {
@@ -58,7 +58,7 @@ public class EarthquakeCityMap extends PApplet {
 		    earthquakesURL = "2.5_week.atom"; 	// Same feed, saved Aug 7, 2015, for working offline
 		}
 		else {
-			map = new UnfoldingMap(this, 200, 50, 700, 500, new Google.GoogleMapProvider());
+			map = new UnfoldingMap(this,200, 50, 700, 500, new Google.GoogleMapProvider());
 			// IF YOU WANT TO TEST WITH A LOCAL FILE, uncomment the next line
 			//earthquakesURL = "2.5_week.atom";
 		}
@@ -79,23 +79,46 @@ public class EarthquakeCityMap extends PApplet {
 	    	PointFeature f = earthquakes.get(0);
 	    	System.out.println(f.getProperties());
 	    	Object magObj = f.getProperty("magnitude");
-	    	float mag = Float.parseFloat(magObj.toString());
+	    	float mag = Float.parseFloat(magObj.toString());    	
 	    	// PointFeatures also have a getLocation method
 	    }
 	    
 	    // Here is an example of how to use Processing's color method to generate 
 	    // an int that represents the color yellow.  
 	    int yellow = color(255, 255, 0);
+	    int blue = color(0, 0, 255);
+	    int red = color(255, 0, 0);
 	    
 	    //TODO: Add code here as appropriate
+	    
+	    for(PointFeature pf : earthquakes){
+	    	SimplePointMarker tempMarker = createMarker(pf);
+	    	float mag = Float.parseFloat(pf.getProperty("magnitude").toString()); 
+	    	if(mag < 4.0){ 
+	    		//Minor earthquakes (less than magnitude 4.0) will have blue markers and be small.
+	    		tempMarker.setColor(blue);
+	    		tempMarker.setRadius(3);
+	    	}
+	    	else if(mag <= 4.9){
+	    		//Light earthquakes (between 4.0-4.9) will have yellow markers and be medium.
+	    		tempMarker.setColor(yellow);
+	    		tempMarker.setRadius(6);
+	    	}
+	    	else{
+	    		//Moderate and higher earthquakes (5.0 and over) will have red markers and be largest.
+	    		tempMarker.setColor(red);
+	    		tempMarker.setRadius(10);
+	    	}
+	    	markers.add(tempMarker);
+	    }
+	    map.addMarkers(markers);
+	    
 	}
 		
 	// A suggested helper method that takes in an earthquake feature and 
 	// returns a SimplePointMarker for that earthquake
-	// TODO: Implement this method and call it from setUp, if it helps
 	private SimplePointMarker createMarker(PointFeature feature)
 	{
-		// finish implementing and use this method, if it helps.
 		return new SimplePointMarker(feature.getLocation());
 	}
 	
@@ -111,6 +134,25 @@ public class EarthquakeCityMap extends PApplet {
 	private void addKey() 
 	{	
 		// Remember you can use Processing's graphics methods here
+		fill(255, 250, 240);
+		rect(25, 50, 150, 250);
+		
+		fill(0);
+		textAlign(LEFT, CENTER);
+		textSize(12);
+		text("Earthquake Key", 50, 75);
+		
+		fill(color(255, 0, 0));
+		ellipse(50, 125, 10, 10);
+		fill(color(255, 255, 0));
+		ellipse(50, 175, 6, 6);
+		fill(color(0, 0, 255));
+		ellipse(50, 225, 3, 3);
+		
+		fill(0, 0, 0);
+		text("5.0+ Magnitude", 65, 125);
+		text("4.0+ Magnitude", 65, 175);
+		text("Below 4.0", 65, 225);
 	
 	}
 }
